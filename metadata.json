@@ -1,0 +1,9 @@
+{
+  "name": "SMK Prima Unggul Online",
+  "description": "Sistem Informasi Akademik, Absensi, dan Ujian Online SMK Prima Unggul Tangerang Selatan terintegrasi.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
