@@ -65,11 +65,13 @@ export default function AppLayout({ children }: {
     if (role === 'ADMIN') {
       items.push(
         { id: 'absensi-siswa', label: 'Absensi Siswa', icon: UserCheck },
+        { id: 'ujian-online', label: 'Ujian Online', icon: FileText },
         { id: 'user-management', label: 'Pengelola User', icon: Settings },
       );
     } else if (role === 'GURU') {
       items.push(
         { id: 'absensi-siswa', label: 'Absensi Siswa', icon: UserCheck },
+        { id: 'ujian-online', label: 'Ujian Online', icon: FileText },
       );
     } else if (role === 'SISWA') {
       items.push(

@@ -20,8 +20,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-
   return (
     <Router>
       <Routes>
@@ -30,14 +28,13 @@ export default function App() {
         
         <Route path="/app/*" element={
           <ProtectedRoute>
-            <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            <AppLayout>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/absensi-karyawan" element={<AbsensiKaryawan />} />
                 <Route path="/absensi-siswa" element={<AbsensiSiswa />} />
                 <Route path="/user-management" element={<UserManagement />} />
                 <Route path="/ujian-online" element={<ExamPage />} />
-                {/* Fallbacks */}
                 <Route path="*" element={<Navigate to="/app" replace />} />
               </Routes>
             </AppLayout>

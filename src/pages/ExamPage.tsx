@@ -10,7 +10,8 @@ import {
   Timer,
   Trophy,
   XCircle,
-  Brain
+  Brain,
+  LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { Question } from '../types';
@@ -84,12 +85,23 @@ export default function ExamPage() {
     }
   };
 
-  const calculateScore = () => {
+  const calculateStats = () => {
     let correct = 0;
+    let wrong = 0;
+    let unanswered = 0;
+
     questions.forEach((q, i) => {
-      if (answers[i] === q.correctAnswer) correct++;
+      if (answers[i] === undefined) {
+        unanswered++;
+      } else if (answers[i] === q.correctAnswer) {
+        correct++;
+      } else {
+        wrong++;
+      }
     });
-    return Math.round((correct / questions.length) * 100);
+
+    const score = Math.round((correct / questions.length) * 100);
+    return { correct, wrong, unanswered, score };
   };
 
   const formatTime = (seconds: number) => {
@@ -99,43 +111,64 @@ export default function ExamPage() {
   };
 
   if (isFinished) {
-    const score = calculateScore();
+    const { correct, wrong, unanswered, score } = calculateStats();
     const passed = score >= 50;
     return (
-        <div className="max-w-2xl mx-auto py-12 px-4 text-center">
+        <div className="max-w-3xl mx-auto py-12 px-4">
             <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white p-12 rounded-[32px] border border-gray-100 shadow-2xl relative overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-[40px] border border-gray-100 shadow-2xl overflow-hidden"
             >
-                <div className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-8 bg-opacity-10 ${passed ? 'bg-green-500 text-green-600' : 'bg-red-500 text-red-600'}`}>
-                    {passed ? <Trophy size={48} /> : <AlertTriangle size={48} />}
-                </div>
-                
-                <h2 className="text-4xl font-black text-gray-900 mb-2">Hasil Ujian Anda</h2>
-                <p className="text-gray-500 font-medium mb-8">Token Ujian: {Math.random().toString(36).toUpperCase().substr(2, 6)}</p>
-
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Skor Akhir</p>
-                        <p className={`text-5xl font-black ${passed ? 'text-green-600' : 'text-red-600'}`}>{score}</p>
+                {/* Result Header */}
+                <div className={`p-12 text-center text-white ${passed ? 'bg-green-600' : 'bg-primary'}`}>
+                    <div className="w-24 h-24 mx-auto rounded-full bg-white/20 flex items-center justify-center mb-6 backdrop-blur-md">
+                        {passed ? <Trophy size={48} /> : <XCircle size={48} />}
                     </div>
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
-                        <p className={`text-xl font-black uppercase tracking-tighter mt-3 ${passed ? 'text-green-600' : 'text-red-600'}`}>
-                            {passed ? 'Lulus KKM' : 'Belum Lulus'}
-                        </p>
-                    </div>
+                    <h2 className="text-4xl font-black mb-2">Ujian Selesai!</h2>
+                    <p className="text-white/80 font-bold uppercase tracking-widest text-sm">Hasil Akhir Evaluasi</p>
                 </div>
 
-                <div className="space-y-3">
-                    <p className="text-sm font-bold text-gray-400 italic">KKM Nilai: 50</p>
+                <div className="p-12">
+                    <div className="grid md:grid-cols-3 gap-6 mb-12">
+                        <div className="p-8 bg-gray-50 rounded-3xl text-center border border-gray-100">
+                             <div className="text-5xl font-black text-gray-900 mb-2">{score}</div>
+                             <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Skor Akhir</div>
+                        </div>
+                        <div className="p-8 bg-gray-50 rounded-3xl text-center border border-gray-100 col-span-2">
+                             <div className={`text-2xl font-black uppercase tracking-tighter mb-2 ${passed ? 'text-green-600' : 'text-primary'}`}>
+                                {passed ? 'Dinyatakan Lulus' : 'Belum Mencapai KKM'}
+                             </div>
+                             <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Status Kelulusan (KKM: 50)</div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 mb-12">
+                        <div className="flex flex-col items-center">
+                            <div className="text-xl font-black text-green-600">{correct}</div>
+                            <div className="text-[10px] font-bold text-gray-400 uppercase">Benar</div>
+                        </div>
+                        <div className="flex flex-col items-center border-x border-gray-100">
+                            <div className="text-xl font-black text-primary">{wrong}</div>
+                            <div className="text-[10px] font-bold text-gray-400 uppercase">Salah</div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="text-xl font-black text-gray-400">{unanswered}</div>
+                            <div className="text-[10px] font-bold text-gray-400 uppercase">Kosong</div>
+                        </div>
+                    </div>
+
                     <button 
                         onClick={() => window.location.href = '/app'}
-                        className="w-full bg-primary text-white py-4 rounded-2xl font-black shadow-lg shadow-red-100 hover:bg-primary-dark transition-all"
+                        className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black shadow-xl shadow-gray-100 hover:bg-black transition-all flex items-center justify-center gap-3"
                     >
-                        Kembali ke Dashboard
+                        <LayoutDashboard size={20} />
+                        Kembali ke Dashboard Utama
                     </button>
+                    
+                    <p className="text-center mt-8 text-xs text-gray-400 font-bold uppercase tracking-widest">
+                        Token Keamanan: {Math.random().toString(36).toUpperCase().substr(2, 10)}
+                    </p>
                 </div>
             </motion.div>
         </div>
